@@ -13,6 +13,8 @@ import pytesseract
 # 2. Lisaks oleks vaja installida ka tesseract ise, https://github.com/UB-Mannheim/tesseract/wiki lingil on leitav windows installer
 # vaikimisi installikaust oleks 'C:\Program Files\Tesseract-OCR\', kui programm mujale paigutada, tuleks seda programmile öelda, sest vale aadress põhjustab katkestuse
 
+# Soovitud pilt peaks (hetkeseisuga) asuma samas kaustas, kui programm. Pildi nimi sisestada koos laiendusega, näiteks pilt.jpg
+
 
 while True:
     pildi_nimi = str(input("Sisesta pilt: "))
