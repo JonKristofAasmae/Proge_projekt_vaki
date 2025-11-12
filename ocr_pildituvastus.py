@@ -29,7 +29,7 @@ while True:
         
         # Kui pytesseract.exe asub kaustas 'C:\Program Files\Tesseract-OCR\tesseract.exe'. Kui ei asu, tuleb seda muuta.
         try:
-            pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.ex'
+            pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
             ocr_tekst = pytesseract.image_to_string(pilt_rgb)
         except:
             vastus = str(input("Tesseract.exe polnud vaikeaadressil leitav, palun täpsusta aadress: ")+"\\tesseract.exe")
