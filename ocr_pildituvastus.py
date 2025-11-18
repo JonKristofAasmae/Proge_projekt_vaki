@@ -1,10 +1,7 @@
-import cv2
+import cv2, pytesseract, os, time
 import numpy as np
 from matplotlib import pyplot as plt
-import pytesseract
-import os
 from tkinter import filedialog
-import time
 
 # Koodi vormistas Maarek Vettik, kasutamaks põhiprogrammis optilise tekstituvastuse funktsioonina.
 # Hetkel on kood proovijärgus
