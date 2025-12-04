@@ -26,9 +26,8 @@ def tuvastus(kaust):
                 
                 pilt = cv2.imdecode(np.fromfile(pildi_aadress, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
                 pilt_rgb = cv2.cvtColor(pilt, cv2.COLOR_BGR2RGB)
-                
-                # Kui pytesseract.exe asub kaustas 'C:\Program Files\Tesseract-OCR\tesseract.exe'. Kui ei asu, küsib programm vanemkausta.
-                
+            
+                # Otsib Tesseract-OCR kausta projektikaustast
                 pytesseract.pytesseract.tesseract_cmd = './Tesseract-OCR/tesseract.exe'
                 ocr_tekst = pytesseract.image_to_string(pilt_rgb)
 
