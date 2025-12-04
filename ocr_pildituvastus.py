@@ -10,69 +10,62 @@ from tkinter import filedialog
 # Visualiseerimisega tegeleb: matplotlib
 ## Alaprogrammi käivitusjuhend:
 # 1. Installida järgmised teegid: numpy, opencv-python, matplotlib, pytesseract teek
-# 2. Lisaks oleks vaja installida ka tesseract ise, https://github.com/UB-Mannheim/tesseract/wiki lingil on leitav windows installer
-# vaikimisi installikaust oleks 'C:\Program Files\Tesseract-OCR\', kui programm mujale paigutada, tuleks seda programmile öelda, sest vale aadress põhjustab katkestuse
 
 # Soovitud pilt peaks asuma valitud kaustas
 # Hetkeseisuga toimib kood teistmoodi olenevalt sellest, kas see on käivitatud kasutaja või teise programmi poolt
 
 def tuvastus(kaust):
     global märksõnad
-
     märksõnad = set()
-        
-    for fail in os.listdir(kaust):
-        if fail.lower().endswith((".jpg", ".jpeg", ".png")):
-            
-            pildi_nimi = fail.lower()
-            pildi_aadress = kaust+"/"+pildi_nimi
-            
-            pilt = cv2.imdecode(np.fromfile(pildi_aadress, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-            pilt_rgb = cv2.cvtColor(pilt, cv2.COLOR_BGR2RGB)
-            
-            # Kui pytesseract.exe asub kaustas 'C:\Program Files\Tesseract-OCR\tesseract.exe'. Kui ei asu, küsib programm vanemkausta.
-            try:
-                pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-                ocr_tekst = pytesseract.image_to_string(pilt_rgb)
-            except:
-                print("Tesseract.exe polnud vaikeaadressil leitav, palun täpsusta kaust aknas, mis avaneb viie sekundi järel")
-                time.sleep(5)
-                vastus = filedialog.askdirectory()
-                pytesseract.pytesseract.tesseract_cmd = vastus+"\\tesseract.exe"
-                ocr_tekst = pytesseract.image_to_string(pilt_rgb)
-            
-            # Otsib (hetkel prooviks järgmisi) märksõmu optiliselt tuvastatud tekstist
-            print("Leitud märksõnad:\n")
-            
-            if "Ubuntu25" in ocr_tekst:
-                märksõnad.add("Ubuntu seade")
-                print("Ubuntu seade")
-            if "maarek" in ocr_tekst:
-                märksõnad.add("Eesnimi")
-                print("Eesnimi")
-            if "vettik" in ocr_tekst:
-                märksõnad.add("Perekonnanimi")
-                print("Perekonnanimi")
-            if "VirtualBox" in ocr_tekst:
-                märksõnad.add("Virtuaalmasin")
-                print("Virtuaalmasin")
-            
-            
-            # Käivitub ainult, kui programm on otseselt jooksutatud, mitte teise programmi kaudu alustatud
-            if __name__ == "__main__":    
-                andmed = pytesseract.image_to_data(pilt_rgb, output_type=pytesseract.Output.DICT)
-
-                n_kasti = len(andmed['level'])
-                for i in range(n_kasti):
-                    (x, y, w, h) = (andmed['left'][i], andmed['top'][i], andmed['width'][i], andmed['height'][i])
-                    cv2.rectangle(pilt_rgb, (x, y), (x + w, y + h), (255, 0, 0), 2)
+    try:
+        for fail in os.listdir(kaust):
+            if fail.lower().endswith((".jpg", ".jpeg", ".png")):
                 
-                plt.figure(figsize=(10, 6))
-                plt.imshow(pilt_rgb)
-                plt.title("Punase kastiga märgitud alad, mida programm kontrollib")
-                plt.axis("off")
-                plt.show()
-                ###
+                pildi_nimi = fail.lower()
+                pildi_aadress = kaust+"/"+pildi_nimi
+                
+                pilt = cv2.imdecode(np.fromfile(pildi_aadress, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+                pilt_rgb = cv2.cvtColor(pilt, cv2.COLOR_BGR2RGB)
+                
+                # Kui pytesseract.exe asub kaustas 'C:\Program Files\Tesseract-OCR\tesseract.exe'. Kui ei asu, küsib programm vanemkausta.
+                
+                pytesseract.pytesseract.tesseract_cmd = './Tesseract-OCR/tesseract.exe'
+                ocr_tekst = pytesseract.image_to_string(pilt_rgb)
+
+                # Otsib (hetkel prooviks järgmisi) märksõmu optiliselt tuvastatud tekstist
+                print("Leitud märksõnad:\n")
+                
+                if "Ubuntu25" in ocr_tekst:
+                    märksõnad.add("Ubuntu seade")
+                    print("Ubuntu seade")
+                if "maarek" in ocr_tekst:
+                    märksõnad.add("Eesnimi")
+                    print("Eesnimi")
+                if "vettik" in ocr_tekst:
+                    märksõnad.add("Perekonnanimi")
+                    print("Perekonnanimi")
+                if "VirtualBox" in ocr_tekst:
+                    märksõnad.add("Virtuaalmasin")
+                    print("Virtuaalmasin")
+                
+                
+                # Käivitub ainult, kui programm on otseselt jooksutatud, mitte teise programmi kaudu alustatud
+                if __name__ == "__main__":    
+                    andmed = pytesseract.image_to_data(pilt_rgb, output_type=pytesseract.Output.DICT)
+
+                    n_kasti = len(andmed['level'])
+                    for i in range(n_kasti):
+                        (x, y, w, h) = (andmed['left'][i], andmed['top'][i], andmed['width'][i], andmed['height'][i])
+                        cv2.rectangle(pilt_rgb, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                    
+                    plt.figure(figsize=(10, 6))
+                    plt.imshow(pilt_rgb)
+                    plt.title("Punase kastiga märgitud alad, mida programm kontrollib")
+                    plt.axis("off")
+                    plt.show()
+                    ###
+    except KeyboardInterrupt:
+        print("Programm lõpetati")
                 
             
 # Käivitub ainult, kui programm on otseselt jooksutatud, mitte teise programmi kaudu alustatud
