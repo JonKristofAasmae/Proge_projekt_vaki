@@ -1,7 +1,7 @@
-import cv2, pytesseract, os, shutil
+import cv2, pytesseract, os, shutil, sys
 import numpy as np
 from transformers import pipeline
-from tkinter import filedialog
+from tkinter import filedialog, messagebox, Tk, Label
 
 
 ## Versioon mis muudab natuke paigutust, et oleks võimalik PyInstalleriga luua .exe versioon
@@ -26,12 +26,15 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-
-
 def tuvastus_nlp(kaust):
-    # Laeb NLP mudeli 'MoritzLaurer/mDeBERTa-v3-base-mnli-xnli', mis mõistab ka eesti keelt
-    ## (Tõstetud funktsiooni sisse, et põhiprogramm saaks avaneda enne laadimist)
-    classifier = pipeline("zero-shot-classification", model="MoritzLaurer/mDeBERTa-v3-base-mnli-xnli", framework="pt")
+    
+    # Loob infoakna kasutaja jaoks, et anda teada tööst 
+    splash = Tk()
+    splash.title("Laadimine")
+    splash.geometry("300x100")
+    Label(splash, text="Palun oota, laen teeke ja NLP mudelit...", pady=20).pack()
+    splash.update() # Displays the window immediately
+
     
     # Defineeritud kategooriad, mida mudel tuvastaks
     siht_kategooriad = ["arvutitehnika", "isiklikud andmed", "õppematerjalid",
@@ -41,8 +44,14 @@ def tuvastus_nlp(kaust):
     tesseract_dir = resource_path('Tesseract-OCR')
     pytesseract.pytesseract.tesseract_cmd = os.path.join(tesseract_dir, 'tesseract.exe')
     
-    ## Vajalik, et Tesseract leiaks keele infot
+    ## Vajalik, et Tesseract leiaks TESSDATA infot
     os.environ['TESSDATA_PREFIX'] = os.path.join(tesseract_dir, 'tessdata')
+    
+    # Laeb NLP mudeli 'MoritzLaurer/mDeBERTa-v3-base-mnli-xnli', mis mõistab ka eesti keelt
+    classifier = pipeline("zero-shot-classification", model="MoritzLaurer/mDeBERTa-v3-base-mnli-xnli", framework="pt")
+    
+    # Sulgeb akna, kui mudel on laetud
+    splash.destroy()
 
     for fail in os.listdir(kaust):
         if fail.lower().endswith((".jpg", ".jpeg", ".png")):
