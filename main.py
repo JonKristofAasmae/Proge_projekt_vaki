@@ -19,10 +19,9 @@ def failitee_valimine():
 def lõim_sisu():
     global pilt_tk
     global failitee
-    ocr.tuvastus(failitee)
+    ocr.tuvastus_nlp(failitee)
     väljund_kast = tk.Label(raam, text="Väljund..", bg="#E0E0E0")
     väljund_kast.place(relx=0.5, rely=0.5, anchor="center")
-    väljund_kast.config(text = ocr.märksõnad)
 
 def lõim_värv():
     global failitee
@@ -84,3 +83,4 @@ progress.place(relx=0.5, rely=0.9, anchor="center")
 
 
 raam.mainloop()
+

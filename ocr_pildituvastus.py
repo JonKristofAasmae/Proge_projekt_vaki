@@ -1,73 +1,61 @@
-import cv2, pytesseract, os, time
+import cv2, pytesseract, os, shutil
 import numpy as np
-from matplotlib import pyplot as plt
+from transformers import pipeline
 from tkinter import filedialog
 
 # Koodi vormistas Maarek Vettik, kasutamaks põhiprogrammis optilise tekstituvastuse funktsioonina.
-# Hetkel on kood proovijärgus
 # OCR tuvastusega tegeleb: https://github.com/UB-Mannheim/tesseract/wiki
 # Pildi töötlemisega tegeleb: https://github.com/opencv/opencv
-# Visualiseerimisega tegeleb: matplotlib
+# Kasutuses olev NLP mudel: https://huggingface.co/MoritzLaurer/mDeBERTa-v3-base-mnli-xnli
+
 ## Alaprogrammi käivitusjuhend:
-# 1. Installida järgmised teegid: numpy, opencv-python, matplotlib, pytesseract teek
+# 1. Installida järgmised teegid: numpy, opencv-python, pytesseract, transformers teek
 
 # Soovitud pilt peaks asuma valitud kaustas
 # Hetkeseisuga toimib kood teistmoodi olenevalt sellest, kas see on käivitatud kasutaja või teise programmi poolt
 
-def tuvastus(kaust):
-    global märksõnad
-    märksõnad = set()
-    try:
-        for fail in os.listdir(kaust):
-            if fail.lower().endswith((".jpg", ".jpeg", ".png")):
-                
-                pildi_nimi = fail.lower()
-                pildi_aadress = kaust+"/"+pildi_nimi
-                
-                pilt = cv2.imdecode(np.fromfile(pildi_aadress, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-                pilt_rgb = cv2.cvtColor(pilt, cv2.COLOR_BGR2RGB)
-            
-                # Otsib Tesseract-OCR kausta projektikaustast
-                pytesseract.pytesseract.tesseract_cmd = './Tesseract-OCR/tesseract.exe'
-                ocr_tekst = pytesseract.image_to_string(pilt_rgb)
+# Laeb NLP mudeli 'MoritzLaurer/mDeBERTa-v3-base-mnli-xnli', mis mõistab ka eesti keelt
+classifier = pipeline("zero-shot-classification", model="MoritzLaurer/mDeBERTa-v3-base-mnli-xnli", framework="pt")
 
-                # Otsib (hetkel prooviks järgmisi) märksõmu optiliselt tuvastatud tekstist
-                print("Leitud märksõnad:\n")
-                
-                if "Ubuntu25" in ocr_tekst:
-                    märksõnad.add("Ubuntu seade")
-                    print("Ubuntu seade")
-                if "maarek" in ocr_tekst:
-                    märksõnad.add("Eesnimi")
-                    print("Eesnimi")
-                if "vettik" in ocr_tekst:
-                    märksõnad.add("Perekonnanimi")
-                    print("Perekonnanimi")
-                if "VirtualBox" in ocr_tekst:
-                    märksõnad.add("Virtuaalmasin")
-                    print("Virtuaalmasin")
-                
-                
-                # Käivitub ainult, kui programm on otseselt jooksutatud, mitte teise programmi kaudu alustatud
-                if __name__ == "__main__":    
-                    andmed = pytesseract.image_to_data(pilt_rgb, output_type=pytesseract.Output.DICT)
+def tuvastus_nlp(kaust):
 
-                    n_kasti = len(andmed['level'])
-                    for i in range(n_kasti):
-                        (x, y, w, h) = (andmed['left'][i], andmed['top'][i], andmed['width'][i], andmed['height'][i])
-                        cv2.rectangle(pilt_rgb, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                    
-                    plt.figure(figsize=(10, 6))
-                    plt.imshow(pilt_rgb)
-                    plt.title("Punase kastiga märgitud alad, mida programm kontrollib")
-                    plt.axis("off")
-                    plt.show()
-                    ###
-    except KeyboardInterrupt:
-        print("Programm lõpetati")
-                
+    
+    # Defineeritud kategooriad, mida mudel tuvastaks
+    siht_kategooriad = ["arvutitehnika", "isiklikud andmed", "õppematerjalid",
+                        "veateated", "küsimus", "matemaatika", "virtuaalmasin", "operatsioonisüsteem"]
+
+    for fail in os.listdir(kaust):
+        if fail.lower().endswith((".jpg", ".jpeg", ".png")):
+            pildi_tee = os.path.join(kaust, fail)
+            # Otsib Tesseract-OCR kausta projektikaustast
+            pytesseract.pytesseract.tesseract_cmd = './Tesseract-OCR/tesseract.exe'
+
+            pilt = cv2.imdecode(np.fromfile(pildi_tee, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
             
-# Käivitub ainult, kui programm on otseselt jooksutatud, mitte teise programmi kaudu alustatud
+            # Loeb teksti
+            ocr_tekst = pytesseract.image_to_string(pilt).strip()
+
+            if not ocr_tekst:
+                print(f"Failis {fail} teksti ei leitud. Jätan vahele.")
+                continue
+
+            # Mudel võrdleb teksti antud kategooriatega
+            tulemus = classifier(ocr_tekst, candidate_labels=siht_kategooriad)
+            
+            # Kõige suurema tõenäosusega kategooria
+            parim_vaste = tulemus['labels'][0]
+            tõenäosus = tulemus['scores'][0]
+
+            print(f"Fail: {fail} | Kategooria: {parim_vaste} ({round(tõenäosus*100, 1)}%)")
+
+            # Faili liigutamine
+            siht_kaust = os.path.join((kaust+"/Sorteeritud_pildid"), parim_vaste)
+            os.makedirs(siht_kaust, exist_ok=True)
+            shutil.copy(pildi_tee, os.path.join(siht_kaust, fail))
+
+
+# Kui programm on käivitatud põhiprogrammina, mitte alaprogrammina
 if __name__ == "__main__":
-    sisend_kaust = filedialog.askdirectory()
-    tuvastus(sisend_kaust)
+    valitud_kaust = filedialog.askdirectory()
+    if valitud_kaust:
+        tuvastus_nlp(valitud_kaust)
