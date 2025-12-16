@@ -47,7 +47,7 @@ def tuvastus_nlp(kaust):
     ## Vajalik, et Tesseract leiaks TESSDATA infot
     os.environ['TESSDATA_PREFIX'] = os.path.join(tesseract_dir, 'tessdata')
     
-    # Laeb NLP mudeli 'MoritzLaurer/mDeBERTa-v3-base-mnli-xnli', mis mõistab ka eesti keelt
+    # Laeb NLP mudeli 'MoritzLaurer/mDeBERTa-v3-base-mnli-xnli' alla, mis mõistab ka eesti keelt
     classifier = pipeline("zero-shot-classification", model="MoritzLaurer/mDeBERTa-v3-base-mnli-xnli", framework="pt")
     
     # Sulgeb akna, kui mudel on laetud
