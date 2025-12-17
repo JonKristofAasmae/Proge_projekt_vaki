@@ -5,6 +5,11 @@ import ocr_pildituvastus as ocr ## Impordib pildituvastaja alaprogrammina
 import os, threading, sys 
 import värvi_järgi_sorteerimine as vjs ## Impordib värvituvastaja alaprogrammina
 
+# Põhiprogramm, mis kasutab piltide sorteerimiseks kahte alamprogrammi, ocr_pildituvastus ja värvi_järgi_sorteerimine
+
+## Käivitusjuhend
+# 1. Installida järgmised teegid: numpy, opencv-python, pytesseract, transformers, torch, pillow, tf-keras
+
 raam = tk.Tk()
 
 raam.geometry("400x400")
