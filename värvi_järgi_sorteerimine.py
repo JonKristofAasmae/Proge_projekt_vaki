@@ -6,6 +6,8 @@ import os
 import shutil
 import numpy as np
 from PIL import Image
+from tkinter import filedialog
+
 def tuvastus(kaust):
     # Kaust, kus pildid asuvad
     Lähtekaust = kaust
@@ -55,5 +57,9 @@ def tuvastus(kaust):
             print(f"{fail} on {värv} (RGB: {r:.0f}, {g:.0f}, {b:.0f}, heledus: {heledus:.0f})")
 
     print("Kõik pildid on sorteeritud!")
- 
 
+# Kui programm on käivitatud põhiprogrammina
+if __name__ == "__main__":
+    valitud_kaust = filedialog.askdirectory()
+    if valitud_kaust:
+        tuvastus(valitud_kaust)

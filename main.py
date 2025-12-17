@@ -3,7 +3,7 @@ from tkinter import filedialog
 from tkinter.ttk import *
 import ocr_pildituvastus as ocr
 import os
-import threading
+import threading, sys
 import värvi_järgi_sorteerimine as vjs
 
 raam = tk.Tk()

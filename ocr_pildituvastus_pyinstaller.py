@@ -12,7 +12,7 @@ from tkinter import filedialog, messagebox, Tk, Label
 # Kasutuses olev NLP mudel: https://huggingface.co/MoritzLaurer/mDeBERTa-v3-base-mnli-xnli
 
 ## Alaprogrammi käivitusjuhend:
-# 1. Installida järgmised teegid: numpy, opencv-python, pytesseract, transformers teek
+# 1. Installida järgmised teegid: numpy, opencv-python, pytesseract, transformers, torch teek
 
 # Soovitud pilt peaks asuma valitud kaustas
 # Hetkeseisuga toimib kood teistmoodi olenevalt sellest, kas see on käivitatud kasutaja või teise programmi poolt
