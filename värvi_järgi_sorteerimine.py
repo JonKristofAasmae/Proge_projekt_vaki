@@ -12,7 +12,7 @@ def tuvastus(kaust):
     # Kaust, kus pildid asuvad
     Lähtekaust = kaust
     #Kaust, kuhu pildid sorteeritakse
-    Sihtkaust = kaust+"/Sorteeritud_pildid"    
+    Sihtkaust = kaust+"/Sorteeritud_pildid/Värvi järgi"    
     #Kontrollib kas kaust kuhu sorteerin on loodud ja kui ei ole siis teeb selle kausta
     os.makedirs(Sihtkaust, exist_ok=True)
 
