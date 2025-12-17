@@ -21,13 +21,13 @@ def lõim_sisu():
     global pilt_tk
     global failitee
     ocr.tuvastus_nlp(failitee)
-    väljund_kast = tk.Label(raam, text="Väljund..", bg="#E0E0E0")
-    väljund_kast.place(relx=0.5, rely=0.5, anchor="center")
+    väljund_kast.config(text = "Valmis")
 
 # Värvi järgi sorteerimise lõim (thread)
 def lõim_värv():
     global failitee
     vjs.tuvastus(failitee)
+    väljund_kast.config(text = "Valmis")
 
 # Kontroll, kas lõim on aktiivne või mitte
 def lõim_kontroll(t):
@@ -44,6 +44,7 @@ def ajasta_kontroll(t):
 # Funktsioon, mis käivitub kui vajutada nuppu "Alusta sorteerimist sisu järgi"
 def algus_sisu():
     progress.start()
+    väljund_kast.config(text = "Töötamine..")
     sule_nupp.config(state=tk.DISABLED)
     t = threading.Thread(target=lõim_sisu)
     t.start()
@@ -52,6 +53,7 @@ def algus_sisu():
 # Funktsioon, mis käivitub kui vajutada nuppu "Alusta sorteerimist värvi järgi"
 def algus_värv():
     progress.start()
+    väljund_kast.config(text = "Töötamine..")
     sule_nupp.config(state=tk.DISABLED)
     t = threading.Thread(target=lõim_värv)
     t.start()
@@ -75,6 +77,9 @@ alusta_nupp_värv = tk.Button(raam, text='Alusta sorteerimist värvi järgi', co
 sule_nupp = tk.Button(raam, text='Sulge', command=Sule)
 
 sule_nupp.grid(row=5, column=0,sticky="NSEW")
+
+väljund_kast = tk.Label(raam, text="...", bg="#E0E0E0")
+väljund_kast.place(relx=0.5, rely=0.5, anchor="center")
 
 # Progressiriba, mis liigub edasi-tagasi töö ajal näitamaks, et programm pole hangunud
 progress = tk.ttk.Progressbar(orient=tk.HORIZONTAL, length=160, mode="indeterminate")
