@@ -27,13 +27,13 @@ def resource_path(relative_path):
 
 
 def tuvastus_nlp(kaust):
-    
-    # Loob infoakna kasutaja jaoks, et anda teada tööst 
-    splash = Tk()
-    splash.title("Laadimine")
-    splash.geometry("300x100")
-    Label(splash, text="Palun oota, laen teeke ja NLP mudelit...", pady=20).pack()
-    splash.update() # Displays the window immediately
+    if __name__ != "__main__":
+        # Loob infoakna kasutaja jaoks, et anda teada tööst 
+        splash = Tk()
+        splash.title("Laadimine")
+        splash.geometry("300x100")
+        Label(splash, text="Palun oota, laen teeke ja NLP mudelit...", pady=20).pack()
+        splash.update() # Displays the window immediately
 
     
     # Defineeritud kategooriad, mida mudel tuvastaks
@@ -50,8 +50,9 @@ def tuvastus_nlp(kaust):
     # Laeb NLP mudeli 'MoritzLaurer/mDeBERTa-v3-base-mnli-xnli' alla, mis mõistab ka eesti keelt
     classifier = pipeline("zero-shot-classification", model="MoritzLaurer/mDeBERTa-v3-base-mnli-xnli", framework="pt")
     
-    # Sulgeb akna, kui mudel on laetud
-    splash.destroy()
+    if __name__ != "__main__":
+        # Sulgeb akna, kui mudel on laetud
+        splash.destroy()
 
     for fail in os.listdir(kaust):
         if fail.lower().endswith((".jpg", ".jpeg", ".png")):
@@ -78,7 +79,9 @@ def tuvastus_nlp(kaust):
             siht_kaust = os.path.join((kaust+"/Sorteeritud_pildid/Sisu järgi"), parim_vaste)
             os.makedirs(siht_kaust, exist_ok=True)
             shutil.copy(pildi_tee, os.path.join(siht_kaust, fail))
-
+            
+    print("Kõik pildid on sorteeritud!")
+    
 # Kui programm on käivitatud põhiprogrammina, mitte alaprogrammina
 if __name__ == "__main__":
     valitud_kaust = filedialog.askdirectory()
